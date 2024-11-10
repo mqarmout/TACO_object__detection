@@ -1,3 +1,3 @@
-# tomato_leaf_disease_detection
+# Garbage Object Detection
 dataset can be found here:
 https://github.com/pedropro/TACO 
