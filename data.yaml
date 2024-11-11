@@ -1,0 +1,16 @@
+# Train/val/test
+path: yolo_top_categories/      # dataset root dir, modify by adding content/ for colab
+train: train/images             # train images
+val: val/images                 # val images
+test: test/images               # test images
+
+# Classes
+names:
+    0: Plastic film
+    1: Unlabeled litter
+    2: Cigarette
+    3: Clear plastic bottle
+    4: Plastic bottle cap
+    5: Other plastic wrapper
+    6: Other plastic
+    7: Drink can
