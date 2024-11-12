@@ -1,0 +1,60 @@
+Trial Number: Trial 2
+Date: 2024-11-12
+Objective: Test the impact of removing underperforming categories (Unlabeled litter, Other plastic, and Other plastic wrapper) on model performance.
+
+---
+
+Adjustments:
+- **Category Removal**: Unlabeled litter, Other plastic, and Other plastic wrapper categories were removed due to poor performance in the baseline model.
+- **Hyperparameters**: Kept consistent with Trial 1 to ensure that the results directly reflect the impact of category removal.
+  - Model: YOLOv8 large model (`yolov8l.pt`)
+  - Epochs: 100
+  - Batch Size: 16
+  - Patience: 15 (early stopping if no improvement)
+  - Freeze Layers: First 10 layers frozen
+  - Augmentation: Enabled for generalization across diverse backgrounds
+
+---
+
+Results:
+Model Summary:
+- Layers: 268
+- Parameters: 43,610,463
+- GFLOPs: 164.8
+
+Performance Metrics:
+- Overall:
+  - Precision: 0.502
+  - Recall: 0.546
+  - mAP@50: 0.494
+  - mAP@50-95: 0.359
+
+Class-wise Metrics:
+| Class                  | Instances | Precision | Recall | mAP@50 | mAP@50-95 |
+|------------------------|-----------|-----------|--------|--------|------------|
+| Plastic film           | 112       | 0.332     | 0.384  | 0.281  | 0.189      |
+| Cigarette              | 121       | 0.733     | 0.372  | 0.457  | 0.246      |
+| Clear plastic bottle   | 47        | 0.418     | 0.638  | 0.510  | 0.420      |
+| Plastic bottle cap     | 35        | 0.691     | 0.657  | 0.648  | 0.425      |
+| Drink can              | 34        | 0.333     | 0.676  | 0.574  | 0.517      |
+
+Speed:
+- Preprocessing: 0.7ms per image
+- Inference: 108.2ms per image
+- Postprocess: 0.8ms per image
+
+Results saved to `runs/detect/train`
+
+---
+
+Observations:
+- Overall Improvement: Removing the underperforming categories improved overall metrics, with significant increases in precision (from 0.405 to 0.502), recall (from 0.363 to 0.546), and mAP@50 (from 0.320 to 0.494).
+- Class Performance: Most classes showed increased mAP@50 scores, particularly Plastic bottle cap and Drink can, suggesting that the model benefited from a reduced number of classes and more focused training.
+- Inference Speed: Slight increase in inference time (from 100.4ms to 108.2ms per image), possibly due to higher quality predictions.
+
+Next Steps:
+- Hyperparameter Tuning: Experiment with different batch sizes and learning rates to maximize improvements seen after category removal.
+- Augmentation Analysis: Test the impact of various augmentation strategies on each class to further improve generalization.
+- Further Class Refinement: Consider additional refinements if certain categories continue to underperform, or introduce regularization to address potential overfitting.
+
+This trial demonstrates the positive impact of focusing the model on classes with sufficient data and better-defined characteristics, setting a clearer path for future optimizations.
