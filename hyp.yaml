@@ -1,0 +1,8 @@
+# predict settings
+augment: False
+
+# augmentation settings
+flipud: 1                      # flips the image upside down using the given probability
+fliplr: 1                       # flips the image left to right using the given probability
+degrees: 180                    # rotates the image randomly within the specified range
+hsv-h: 1                        # adjusts the hue of the image
