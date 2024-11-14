@@ -1,0 +1,70 @@
+Trial Number: Trial 3
+Date: 2024-11-13
+Objective: Test the impact of removing implementing data augmentation, then down sampling and removing categories that couldn't allow balancing
+
+---
+
+Adjustments:
+- Model Architecture: YOLOv8 large model (`yolov8l.pt`) selected to better handle small objects and complex backgrounds.
+- Image Resolution: High resolution (1536x1536) was used to capture detail, crucial for detecting small objects within the dataset.
+- Dataset Modification: Categories reduced to include only classes with a significant number of objects, increasing focus on relevant data and reducing noise.
+- Used 6 Categories:  [Clear plastic bottle, Plastic bottle cap, Plastic film, Cigarette, Drink can, 
+                       Other plastic wrapper]
+- Data Augmentation then down sampling for balancing and generalization
+
+- Hyperparameters:
+  - Epochs: 100
+  - Batch Size: 16
+  - Patience: 15 (early stopping if no improvement)
+  - Freeze Layers: First 10 layers frozen to leverage pretrained weights for low-level feature extraction
+ 
+
+
+
+
+Model Summary:
+
+Layers: 268
+Parameters: 43,612,776
+GFLOPs: 164.8
+Performance Metrics:
+
+Overall:
+Precision: 0.309
+Recall: 0.322
+mAP@50: 0.275
+mAP@50-95: 0.124
+Class-wise Metrics:
+
+Class	               Instances	Precision	Recall	mAP@50	mAP@50-95
+Plastic film	            81	           0.371	0.342	0.243	0.11
+Unlabeled litter	    75	           0.0	        0.0	0.0	0.0
+Cigarette	            136	           0.371	0.346	0.266	0.118
+Clear plastic bottle	    51	           0.51	        0.529	0.56	0.253
+Plastic bottle cap	    40	           0.403	0.425	0.377	0.147
+Other plastic wrapper	    41	           0.353	0.319	0.262	0.112
+Drink can	            34	           0.465	0.618	0.49	0.249
+Other plastic	            47	           0.0	        0.0	0.0	0.0
+
+Speed:
+
+Preprocessing: 0.7ms per image
+Inference: 10.5ms per image
+Postprocess: 2.6ms per image
+Observations:
+
+Even though we applied data augmentation and removed some categories, the model underperformed compared to the last 2 trials
+
+Classes like Clear plastic bottle and Other plastic, showing stronger precision and recall compared to other categories. The better performance may be due to more distinguishable features for these categories.
+Classes like Unlabelled litter and Other plastic exhibited very low or zero precision and recall because they were removed from the training set.
+
+The overall mAP values indicate that further improvements are needed, particularly in handling more challenging or less distinguishable categories.
+
+The conclusion is that the way we applied data augmentation should be modified. We started by augmenting the data on all categories then down sampled data from all categories which infer that by creating synthetic data in the first step, we removed real data in the second step, which impacted negatively on the result.
+
+Next Steps:
+
+Refine Classes: 
+Data Augmentation: We need to modify the way we implement data augmentation. Either by improving recognition for difficult categories such as Plastic film and Cigarette or implementing very few operation on images and avoid down sampling after data augmentation.
+
+Model Optimization: Experiment with learning rate adjustments or other hyperparameters, as well as refining the model architecture to increase precision and recall across all classes.

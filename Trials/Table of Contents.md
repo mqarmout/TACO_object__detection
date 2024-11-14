@@ -37,7 +37,7 @@ This document provides an overview of each trial conducted in the `Trials` folde
 
 ---
 
-## Trial Number: Trial 3
+## Trial #3 details.txt
 - **Trial Number**: Trial 3
 - **Date**: 2024-11-13
 - **Objective**: Test the impact of removing implementing data augmentation, then down sampling and removing categories that couldn't allow balancing
