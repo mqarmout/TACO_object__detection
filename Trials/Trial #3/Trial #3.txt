@@ -10,12 +10,14 @@ Adjustments:
 - Dataset Modification: Categories reduced to include only classes with a significant number of objects, increasing focus on relevant data and reducing noise.
 - Used 6 Categories:  [Clear plastic bottle, Plastic bottle cap, Plastic film, Cigarette, Drink can, 
                        Other plastic wrapper]
+- Data Augmentation then down sampling for balancing and generalization
+
 - Hyperparameters:
   - Epochs: 100
   - Batch Size: 16
   - Patience: 15 (early stopping if no improvement)
   - Freeze Layers: First 10 layers frozen to leverage pretrained weights for low-level feature extraction
-  - Data Augmentation: Enabled to help with model generalization on diverse backgrounds
+ 
 
 
 

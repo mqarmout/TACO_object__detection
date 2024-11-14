@@ -37,4 +37,24 @@ This document provides an overview of each trial conducted in the `Trials` folde
 
 ---
 
+## Trial Number: Trial 3
+- **Trial Number**: Trial 3
+- **Date**: 2024-11-13
+- **Objective**: Test the impact of removing implementing data augmentation, then down sampling and removing categories that couldn't allow balancing
+ **Adjustments**:
+- Model Architecture: YOLOv8 large model (`yolov8l.pt`) selected to better handle small objects and complex backgrounds.
+- Image Resolution: High resolution (1536x1536) was used to capture detail, crucial for detecting small objects within the dataset.
+- Dataset Modification: Categories reduced to include only classes with a significant number of objects, increasing focus on relevant data and reducing noise.
+- **Category Removal**: we kept 6 Categories:  [Clear plastic bottle, Plastic bottle cap, Plastic film, Cigarette, Drink can, 
+                       Other plastic wrapper]
+- Data Augmentation then down sampling for balancing and generalization
+ - **Hyperparameters**:
+  - Epochs: 100
+  - Batch Size: 16
+  - Patience: 15 (early stopping if no improvement)
+  - Freeze Layers: First 10 layers frozen to leverage pretrained weights for low-level feature extraction
+ 
+
+
+
 This is the initial structure for tracking trials in the `Trials` folder. As additional trials are conducted, more entries will be added to this Table of Contents to document the evolving improvements and adjustments.
