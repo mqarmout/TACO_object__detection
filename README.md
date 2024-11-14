@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Garbage Object Detection
+=======
+# garbage_detection
+>>>>>>> trial_3_yolo8_augmented_data_v1
 dataset can be found here:
 https://github.com/pedropro/TACO 
 
