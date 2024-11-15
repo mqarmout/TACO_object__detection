@@ -4,7 +4,7 @@ This document provides an overview of each trial conducted in the `Trials` folde
 
 ---
 
-## Trial #1 
+## Trial #1 details.txt
 - **Trial Number**: Trial 1
 - **Date**: 2024-11-12
 - **Objective**: Establish a baseline performance with a large YOLO model to detect small objects in complex environments.
@@ -54,7 +54,28 @@ This document provides an overview of each trial conducted in the `Trials` folde
   - Patience: 15 (early stopping if no improvement)
   - Freeze Layers: First 10 layers frozen to leverage pretrained weights for low-level feature extraction
  
+## Trial #5 details.txt  
+- **Trial Number**: Trial 4  
+- **Date**: 2024-11-14  
+- **Objective**: Evaluate the YOLO11m model with increased training epochs and patience to assess its performance improvements and analyze its efficiency compared to the previously used YOLOv8l model.  
+- **Adjustments**:  
+  - **Model Transition**:  
+    - Switched from YOLOv8 large model (`yolov8l.pt`) to YOLO11 medium model (`yolov11m.pt`).  
+    - YOLO11m is the medium-sized release of YOLO11, designed for superior efficiency in training and inference due to its updated architecture.  
+  - **Hyperparameters**:  
+    - Increased epochs from 100 to 200.  
+    - Increased patience for early stopping from 15 to 30.  
+    - Image resolution set to 1536.  
+    - Batch size: 16.  
+    - First 10 layers frozen to prevent overfitting.  
 
+- **Results**:  
+  - **Precision**: 0.637  
+  - **Recall**: 0.452  
+  - **mAP@50**: 0.492  
+  - **mAP@50-95**: 0.380  
+  - Inference speed: 33.5 ms per image.  
+  - "Plastic bottle cap" achieved the highest precision (0.812), and "Clear plastic bottle" achieved the highest mAP@50 (0.631).  
 
 
 This is the initial structure for tracking trials in the `Trials` folder. As additional trials are conducted, more entries will be added to this Table of Contents to document the evolving improvements and adjustments.

@@ -1,0 +1,72 @@
+**Trial Number**: Trial 5  
+**Date**: 2024-11-14  
+**Objective**: Evaluate the YOLO11m model with increased training epochs and patience to assess its performance improvements, and analyze its efficiency compared to the previously used YOLOv8l model.
+
+---
+
+**Adjustments**:  
+- **Model Transition**:
+  - Moved from YOLOv8 large model (`yolov8l.pt`) to YOLO11 medium model (`yolov11m.pt`).
+  - YOLO11m, the medium-sized release of the recently launched YOLO11, is designed for superior efficiency in both training and inference due to its improved architecture. This trial serves as an initial evaluation of its capabilities compared to YOLOv8l.  
+- **Training Hyperparameters**:
+  - Increased training epochs from 100 to 200 to allow the model more time to learn complex patterns.
+  - Increased patience for early stopping from 15 to 30 to prevent premature termination.
+  - Image size (`imgsz`) set to 1536 for higher resolution input.
+  - Batch size retained at 16 for consistency with previous trials.
+  - First 10 layers frozen to leverage transfer learning and prevent overfitting.
+
+---
+
+**Results**:
+
+Model Summary (fused):  
+- **Layers**: 303  
+- **Parameters**: 20,033,887  
+- **Gradients**: 0  
+- **GFLOPs**: 67.7  
+
+Performance Metrics (Overall):  
+- **Precision**: 0.637  
+- **Recall**: 0.452  
+- **mAP@50**: 0.492  
+- **mAP@50-95**: 0.380  
+
+Class-wise Metrics:  
+
+```
+Class                   | Instances | Precision | Recall | mAP@50 | mAP@50-95
+------------------------|-----------|-----------|--------|--------|-----------
+Plastic film            | 86        | 0.461     | 0.302  | 0.346  | 0.249
+Cigarette               | 135       | 0.687     | 0.333  | 0.420  | 0.249
+Clear plastic bottle    | 65        | 0.672     | 0.569  | 0.631  | 0.531
+Plastic bottle cap      | 48        | 0.812     | 0.450  | 0.533  | 0.420
+Drink can               | 43        | 0.553     | 0.605  | 0.530  | 0.451
+```
+
+Speed:  
+- **Preprocessing**: 0.7 ms per image  
+- **Inference**: 33.5 ms per image  
+- **Postprocessing**: 2.0 ms per image  
+
+Results saved to `runs/detect/train`
+
+---
+
+**Observations**:  
+- **Model Transition**:
+  - The switch to YOLO11m demonstrated clear improvements in inference efficiency, with an average inference time of 33.5 ms per image compared to 45.0 ms in the YOLOv8l-based Trial 3. This aligns with the claims of YOLO11m's enhanced architecture.
+  - Despite having fewer parameters than YOLOv8l, YOLO11m achieved competitive or superior metrics, reinforcing its design goal of balancing efficiency with performance.  
+- **Model Performance**:
+  - The increased training epochs and patience allowed the model to reach a higher precision (0.637) and mAP@50-95 (0.380) compared to previous trials.
+  - "Plastic bottle cap" achieved the highest precision (0.812), while "Clear plastic bottle" had the highest mAP@50 (0.631), highlighting the model's strong detection capabilities for certain categories.
+  - "Plastic film" and "Cigarette" showed lower recall, indicating persistent challenges in reliably detecting these classes.  
+- **Efficiency Gains**: YOLO11m's improved architecture not only reduced inference time but also maintained robust detection capabilities, making it a promising upgrade from YOLOv8l.  
+
+---
+
+**Next Steps**:  
+- **Augmentation Refinement**: Experiment with advanced augmentation techniques to improve recall for challenging classes like "Plastic film" and "Cigarette."  
+- **Loss Function Adjustment**: Explore class-specific weighting in the loss function to mitigate class imbalance further.  
+- **Dataset Expansion**: Include additional diverse data samples for underperforming classes to enhance their representation in training.  
+
+This trial demonstrates that YOLO11m's architecture provides significant advantages in efficiency and comparable performance to its predecessor, YOLOv8l. Future work will aim to further optimize its performance, particularly for underperforming classes, while leveraging its efficiency gains.
