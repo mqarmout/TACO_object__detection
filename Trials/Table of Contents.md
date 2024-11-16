@@ -54,13 +54,15 @@ This document provides an overview of each trial conducted in the `Trials` folde
   - Patience: 15 (early stopping if no improvement)
   - Freeze Layers: First 10 layers frozen to leverage pretrained weights for low-level feature extraction
  
+---
+
 ## Trial #5 details.txt  
 - **Trial Number**: Trial 4  
 - **Date**: 2024-11-14  
 - **Objective**: Evaluate the YOLO11m model with increased training epochs and patience to assess its performance improvements and analyze its efficiency compared to the previously used YOLOv8l model.  
 - **Adjustments**:  
   - **Model Transition**:  
-    - Switched from YOLOv8 large model (`yolov8l.pt`) to YOLO11 medium model (`yolov11m.pt`).  
+    - Switched from YOLOv8 large model (`yolov8l.pt`) to YOLO11 medium model (`yolo11m.pt`).  
     - YOLO11m is the medium-sized release of YOLO11, designed for superior efficiency in training and inference due to its updated architecture.  
   - **Hyperparameters**:  
     - Increased epochs from 100 to 200.  
@@ -77,5 +79,44 @@ This document provides an overview of each trial conducted in the `Trials` folde
   - Inference speed: 33.5 ms per image.  
   - "Plastic bottle cap" achieved the highest precision (0.812), and "Clear plastic bottle" achieved the highest mAP@50 (0.631).  
 
+---
+
+## Trial #6 details.txt  
+- **Trial Number**: Trial 6  
+- **Date**: 2024-11-14  
+- **Objective**: Validate the impact of advanced augmentation techniques, reduced learning rate, and regularization on YOLO11m model performance and efficiency.  
+- **Adjustments**:  
+  - **Model Transition**:  
+    - Retained YOLO11 medium model (`yolo11m.pt`) to further explore its capabilities and efficiency improvements.  
+  - **Training Hyperparameters**:  
+    - **Learning Rate**: Reduced initial learning rate to `1e-4` for smoother convergence.  
+    - **Optimizer**: Switched to Adam optimizer for improved performance on non-convex problems.  
+    - **Regularization**: Added weight decay (`5e-4`) to reduce overfitting.  
+    - **Warmup**: Introduced 3 warmup epochs with a momentum of 0.8 for a smoother training start.  
+    - **Augmentation**:  
+      - Increased MixUp augmentation probability to 0.2.  
+      - Enabled new augmentations: rotation (`degrees=10.0`), shear (`shear=2.0`), and translation (`translate=0.1`).  
+      - Adjusted HSV augmentation (`hsv_h=0.015`, `hsv_s=0.7`, `hsv_v=0.4`).  
+      - Flipping probabilities: vertical (`flipud=0.0`), horizontal (`fliplr=0.5`).  
+      - Enabled Mosaic augmentation (`mosaic=1.0`).  
+    - **Cosine Learning Rate Scheduler**: Enabled to improve learning rate adjustments dynamically.  
+    - Retained parameters:  
+      - Epochs: 200  
+      - Patience: 30  
+      - Image resolution: 1536  
+      - Batch size: 16  
+      - First 10 layers frozen.  
+
+- **Results**:  
+  - **Precision**: 0.529  
+  - **Recall**: 0.563  
+  - **mAP@50**: 0.520  
+  - **mAP@50-95**: 0.361  
+  - Inference speed: 33.2 ms per image.  
+  - "Clear plastic bottle" achieved the highest mAP@50 (0.612), while "Plastic bottle cap" achieved the highest precision (0.650).  
+
+This trial further demonstrates the efficiency of YOLO11m while exploring the potential of advanced augmentation and regularization techniques to improve performance.
+
+---
 
 This is the initial structure for tracking trials in the `Trials` folder. As additional trials are conducted, more entries will be added to this Table of Contents to document the evolving improvements and adjustments.

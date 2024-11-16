@@ -1,0 +1,79 @@
+**Trial Number**: Trial 6  
+**Date**: 2024-11-14  
+**Objective**: Evaluate the YOLO11m model with advanced augmentation, reduced learning rate, and additional regularization to assess its impact on model performance and efficiency.
+
+---
+
+**Adjustments**:  
+- **Model Transition**:  
+  - Continued using YOLO11 medium model (`yolo11m.pt`) to leverage its superior efficiency and updated architecture introduced in Trial 5.  
+- **Training Hyperparameters**:  
+  - **Learning Rate**: Reduced initial learning rate to `1e-4` for more gradual convergence and stability.  
+  - **Optimizer**: Adam optimizer used instead of default SGD.  
+  - **Weight Decay**: Set to `5e-4` for regularization to prevent overfitting.  
+  - **Warmup**: Introduced 3 warmup epochs with a momentum of 0.8 for smoother optimization initialization.  
+  - **Augmentation Enhancements**:
+    - Increased MixUp augmentation probability to 0.2.
+    - Introduced new augmentation techniques: rotation (`degrees=10.0`), shear (`shear=2.0`), and translation (`translate=0.1`).  
+    - Adjusted HSV augmentation (`hsv_h=0.015`, `hsv_s=0.7`, `hsv_v=0.4`) and flipping probabilities (`flipud=0.0`, `fliplr=0.5`).  
+  - **Cosine Learning Rate Scheduler**: Enabled for smoother learning rate adjustments.  
+  - Retained consistent parameters from Trial 5:  
+    - Epochs: 200  
+    - Patience: 30  
+    - Image size: 1536  
+    - Batch size: 16  
+    - First 10 layers frozen.  
+
+---
+
+**Results**:
+
+Model Summary (fused):  
+- **Layers**: 303  
+- **Parameters**: 20,033,887  
+- **Gradients**: 0  
+- **GFLOPs**: 67.7  
+
+Performance Metrics (Overall):  
+- **Precision**: 0.529  
+- **Recall**: 0.563  
+- **mAP@50**: 0.520  
+- **mAP@50-95**: 0.361  
+
+Class-wise Metrics:  
+
+```
+Class                   | Instances | Precision | Recall | mAP@50 | mAP@50-95
+------------------------|-----------|-----------|--------|--------|-----------
+Plastic film            | 86        | 0.349     | 0.453  | 0.366  | 0.259
+Cigarette               | 135       | 0.545     | 0.437  | 0.463  | 0.258
+Clear plastic bottle    | 65        | 0.586     | 0.646  | 0.612  | 0.441
+Plastic bottle cap      | 48        | 0.650     | 0.604  | 0.573  | 0.387
+Drink can               | 43        | 0.513     | 0.674  | 0.587  | 0.459
+```
+
+Speed:  
+- **Preprocessing**: 0.7 ms per image  
+- **Inference**: 33.2 ms per image  
+- **Postprocessing**: 2.0 ms per image  
+
+Results saved to `runs/detect/train`
+
+---
+
+**Observations**:  
+- **Augmentation Impact**: The introduction of advanced augmentation techniques resulted in better recall (0.563) but slightly reduced precision (0.529), likely due to the increased diversity in training samples.  
+- **Performance on Difficult Classes**:  
+  - "Clear plastic bottle" continued to show strong performance with the highest mAP@50 (0.612).  
+  - "Plastic film" remained the most challenging class, showing the lowest mAP@50 (0.366) and recall (0.453).  
+- **Efficiency Gains**: Despite the addition of more complex training procedures, the inference speed (33.2 ms per image) remained consistent with Trial 5, demonstrating YOLO11m's architectural efficiency.  
+- **Model Regularization**: The addition of weight decay and warmup epochs may have contributed to more stable training and reduced overfitting.  
+
+---
+
+**Next Steps**:  
+- **Class-Specific Optimization**: Investigate targeted augmentations or sampling strategies for underperforming classes like "Plastic film" to improve detection and recall.  
+- **Regularization Analysis**: Explore further adjustments to weight decay and learning rate schedules to optimize convergence and generalization.  
+- **Augmentation Fine-Tuning**: Refine the augmentation probabilities and settings (e.g., MixUp, rotation) to balance diversity without compromising precision.  
+
+This trial highlights the benefits of advanced training techniques and regularization while maintaining the efficiency of YOLO11m's architecture. Future work will focus on fine-tuning these adjustments for further improvement in model performance.  
