@@ -1,0 +1,79 @@
+**Trial Number**: Trial 7  
+**Date**: 2024-11-16  
+**Objective**: Evaluate the impact of increasing the number of frozen layers from 10 to 15 on the performance and efficiency of the YOLO11m model.  
+
+---
+
+**Adjustments**:  
+- **Model Transition**:  
+  - Continued using YOLO11 medium model (`yolo11m.pt`) due to its established efficiency and performance balance.  
+- **Training Hyperparameters**:  
+  - **Frozen Layers**: Increased from 10 to 15 layers to reduce computational demands during training and encourage better utilization of pre-trained weights.  
+  - Other parameters remained consistent with Trial 6:  
+    - Learning Rate: `1e-4`  
+    - Optimizer: Adam  
+    - Weight Decay: `5e-4`  
+    - Warmup Epochs: 3 with momentum set to 0.8  
+    - Augmentation: MixUp probability 0.2, rotation (`degrees=10.0`), shear (`shear=2.0`), translation (`translate=0.1`), HSV settings (`hsv_h=0.015`, `hsv_s=0.7`, `hsv_v=0.4`), and flipping (`flipud=0.0`, `fliplr=0.5`).  
+    - Scheduler: Cosine Learning Rate Scheduler  
+    - Epochs: 200  
+    - Patience: 30  
+    - Image Size: 1536  
+    - Batch Size: 16  
+
+---
+
+**Results**:  
+
+Model Summary (fused):  
+- **Layers**: 303  
+- **Parameters**: 20,033,887  
+- **Gradients**: 0  
+- **GFLOPs**: 67.7  
+
+Performance Metrics (Overall):  
+- **Precision**: 0.559  
+- **Recall**: 0.424  
+- **mAP@50**: 0.443  
+- **mAP@50-95**: 0.290  
+
+Class-wise Metrics:  
+
+```
+Class                   | Instances | Precision | Recall | mAP@50 | mAP@50-95
+------------------------|-----------|-----------|--------|--------|-----------
+Plastic film            | 93        | 0.345     | 0.355  | 0.293  | 0.201
+Cigarette               | 139       | 0.639     | 0.331  | 0.410  | 0.224
+Clear plastic bottle    | 56        | 0.611     | 0.607  | 0.627  | 0.435
+Plastic bottle cap      | 38        | 0.610     | 0.368  | 0.428  | 0.242
+Drink can               | 37        | 0.587     | 0.459  | 0.459  | 0.349
+```  
+
+Speed:  
+- **Preprocessing**: 0.7 ms per image  
+- **Inference**: 33.6 ms per image  
+- **Postprocessing**: 2.0 ms per image  
+
+Results saved to `runs/detect/train`.  
+
+---
+
+**Observations**:  
+- **Effect of Increased Frozen Layers**:  
+  - Freezing additional layers did not significantly affect inference speed, which remained consistent at ~33.6 ms per image.  
+  - Precision improved slightly from Trial 6 (0.529 → 0.559), but recall decreased (0.563 → 0.424), leading to mixed overall performance outcomes.  
+- **Class-Specific Performance**:  
+  - "Clear plastic bottle" maintained the highest mAP@50 (0.627) and strong performance across metrics, benefiting from the model's robustness in detecting this class.  
+  - "Plastic film" continued to perform poorly, with the lowest recall (0.355) and mAP@50-95 (0.201).  
+- **Training Behavior**:  
+  - Increased frozen layers likely limited feature adaptation in earlier layers, which may have constrained recall improvement for more complex or less distinct classes.  
+
+---
+
+**Next Steps**:  
+- **Layer Freezing Analysis**: Experiment with intermediate freezing levels (e.g., 12 or 13 layers) to find an optimal balance between feature reuse and adaptation.  
+- **Targeted Augmentation for Weak Classes**: Focus on augmenting underperforming classes, such as "Plastic film," through class-specific sampling or tailored transformations.  
+- **Refinement of Augmentation Parameters**: Adjust probabilities for techniques like MixUp and rotation to improve class-specific precision and recall.  
+- **Regularization Adjustment**: Consider further fine-tuning weight decay and learning rate schedules to enhance convergence and generalization.  
+
+This trial underscores the trade-offs between freezing additional layers and retaining adaptability in training. While efficiency was maintained, performance on challenging classes remains a priority for subsequent trials.
