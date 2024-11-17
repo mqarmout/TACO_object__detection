@@ -1,0 +1,80 @@
+**Trial Number**: Trial 8  
+**Date**: 2024-11-16  
+**Objective**: Assess the impact of reducing the learning rate from `1e-4` to `1e-5` on validation performance while maintaining the number of frozen layers at 10.  
+
+---
+
+**Adjustments**:  
+- **Model Transition**:  
+  - Continued with YOLO11 medium model (`yolo11m.pt`) leveraging its optimized architecture and established performance.  
+- **Training Hyperparameters**:  
+  - **Learning Rate**: Reduced from `1e-4` to `1e-5` to allow more fine-grained updates during training and potentially improve convergence on validation data.  
+  - Other parameters remained consistent with prior trials:  
+    - Frozen Layers: 10  
+    - Optimizer: Adam  
+    - Weight Decay: `5e-4`  
+    - Warmup Epochs: 3 with momentum set to 0.8  
+    - Augmentation: MixUp probability 0.2, rotation (`degrees=10.0`), shear (`shear=2.0`), translation (`translate=0.1`), HSV settings (`hsv_h=0.015`, `hsv_s=0.7`, `hsv_v=0.4`), and flipping (`flipud=0.0`, `fliplr=0.5`).  
+    - Scheduler: Cosine Learning Rate Scheduler  
+    - Epochs: 200  
+    - Patience: 30  
+    - Image Size: 1536  
+    - Batch Size: 16  
+
+---
+
+**Results**:  
+
+Model Summary (fused):  
+- **Layers**: 303  
+- **Parameters**: 20,033,887  
+- **Gradients**: 0  
+- **GFLOPs**: 67.7  
+
+Performance Metrics (Overall):  
+- **Precision**: 0.579  
+- **Recall**: 0.480  
+- **mAP@50**: 0.497  
+- **mAP@50-95**: 0.330  
+
+Class-wise Metrics:  
+
+```
+Class                   | Instances | Precision | Recall | mAP@50 | mAP@50-95
+------------------------|-----------|-----------|--------|--------|-----------
+Plastic film            | 93        | 0.370     | 0.398  | 0.327  | 0.220
+Cigarette               | 139       | 0.759     | 0.424  | 0.537  | 0.284
+Clear plastic bottle    | 56        | 0.690     | 0.643  | 0.675  | 0.475
+Plastic bottle cap      | 38        | 0.600     | 0.447  | 0.451  | 0.281
+Drink can               | 37        | 0.474     | 0.486  | 0.495  | 0.390
+```  
+
+Speed:  
+- **Preprocessing**: 0.7 ms per image  
+- **Inference**: 33.8 ms per image  
+- **Postprocessing**: 1.6 ms per image  
+
+Results saved to `runs/detect/train`.  
+
+---
+
+**Observations**:  
+- **Learning Rate Reduction Impact**:  
+  - The lower learning rate resulted in a slight improvement in mAP@50 (0.497) compared to earlier trials, indicating better performance on the validation set.  
+  - Precision (0.579) increased marginally, while recall (0.480) slightly decreased, suggesting a stronger focus on fewer but more accurate predictions.  
+- **Class-Specific Performance**:  
+  - "Clear plastic bottle" demonstrated the highest mAP@50 (0.675) and mAP@50-95 (0.475), maintaining its position as the best-performing class.  
+  - "Plastic film" remains the most challenging, with the lowest recall (0.398) and mAP@50-95 (0.220).  
+  - "Cigarette" saw a notable boost in precision (0.759), though recall (0.424) was limited.  
+- **Efficiency**:  
+  - Inference time (33.8 ms per image) and preprocessing/postprocessing speeds remained consistent, reaffirming the model's computational efficiency.  
+
+---
+
+**Next Steps**:  
+- **Learning Rate Exploration**: Evaluate intermediate learning rates (e.g., `5e-5`) to balance precision and recall further.  
+- **Class-Specific Focus**: Implement tailored augmentations and sampling strategies for underperforming classes, especially "Plastic film."  
+- **Advanced Regularization**: Experiment with alternative regularization techniques, such as dropout or cyclic weight decay, to improve generalization.  
+- **Training Epochs and Patience**: Consider adjusting the number of epochs and patience settings to ensure adequate training time for convergence with a smaller learning rate.  
+
+This trial demonstrates the potential of fine-tuning the learning rate to enhance validation performance, particularly for precision-focused tasks. Future work will aim to address recall limitations and improve the performance of challenging classes like "Plastic film."  

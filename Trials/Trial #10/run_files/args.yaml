@@ -1,6 +1,6 @@
 task: detect
 mode: train
-model: yolo11m.pt
+model: yolo11l.pt
 data: taco.yaml
 epochs: 200
 time: null
@@ -32,7 +32,7 @@ freeze: 5
 multi_scale: false
 overlap_mask: true
 mask_ratio: 4
-dropout: 0.0
+dropout: 0.1
 val: true
 split: val
 save_json: false
@@ -47,7 +47,7 @@ source: null
 vid_stride: 1
 stream_buffer: false
 visualize: false
-augment: false
+augment: true
 agnostic_nms: false
 classes: null
 retina_masks: false
