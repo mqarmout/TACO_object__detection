@@ -1,0 +1,82 @@
+**Trial Number**: Trial 9  
+**Date**: 2024-11-16  
+**Objective**: Build upon the previous model configuration by evaluating the impact of increasing the **scale** parameter to 1 (from 0.5) and the **rotation (degrees)** to 30 (from 10). The goal was to assess whether these augmented transformations improve model performance and generalization.  
+
+---
+
+**Adjustments**:  
+- **Continued Configuration**:  
+  - Retained the YOLO11 medium model (`yolo11m.pt`) and consistent settings from Trial 8, ensuring comparability in results.  
+- **Augmentation Enhancements**:  
+  - **Scale**: Increased from 0.5 to 1, allowing objects to appear in a broader size range during training.  
+  - **Rotation**: Increased from 10 degrees to 30 degrees to introduce more varied orientations.  
+- Other parameters remained the same as in Trial 8:  
+  - Learning Rate: `1e-5`  
+  - Frozen Layers: 10  
+  - Optimizer: Adam  
+  - Weight Decay: `5e-4`  
+  - Warmup Epochs: 3 (momentum = 0.8)  
+  - Additional Augmentations: MixUp (probability 0.2), shear (`shear=2.0`), translation (`translate=0.1`), HSV augmentations (`hsv_h=0.015`, `hsv_s=0.7`, `hsv_v=0.4`), flipping (`flipud=0.0`, `fliplr=0.5`).  
+  - Scheduler: Cosine Learning Rate Scheduler  
+  - Epochs: 200  
+  - Patience: 30  
+  - Image Size: 1536  
+  - Batch Size: 16  
+
+---
+
+**Results**:  
+
+Model Summary (fused):  
+- **Layers**: 303  
+- **Parameters**: 20,033,887  
+- **Gradients**: 0  
+- **GFLOPs**: 67.7  
+
+Performance Metrics (Overall):  
+- **Precision**: 0.579  
+- **Recall**: 0.584  
+- **mAP@50**: 0.589  
+- **mAP@50-95**: 0.436  
+
+Class-wise Metrics:  
+
+```
+Class                   | Instances | Precision | Recall | mAP@50 | mAP@50-95
+------------------------|-----------|-----------|--------|--------|-----------
+Plastic film            | 93        | 0.436     | 0.448  | 0.398  | 0.292
+Cigarette               | 139       | 0.626     | 0.568  | 0.588  | 0.328
+Clear plastic bottle    | 56        | 0.746     | 0.786  | 0.810  | 0.646
+Plastic bottle cap      | 38        | 0.512     | 0.470  | 0.483  | 0.345
+Drink can               | 37        | 0.576     | 0.649  | 0.666  | 0.569
+```  
+
+Speed:  
+- **Preprocessing**: 0.6 ms per image  
+- **Inference**: 9.1 ms per image  
+- **Postprocessing**: 5.0 ms per image  
+
+Results saved to `runs/detect/train`.  
+
+---
+
+**Observations**:  
+- **Impact of Increased Augmentation**:  
+  - The broader scaling and rotation range slightly improved **recall** (0.584) and **mAP@50** (0.589), indicating the model's ability to generalize better to diverse object sizes and orientations.  
+  - The boost in **mAP@50-95** (0.436) suggests improved localization across IoU thresholds, particularly benefiting harder-to-detect objects.  
+- **Class-Specific Trends**:  
+  - "Clear plastic bottle" continues to outperform other classes with the highest mAP@50 (0.810) and mAP@50-95 (0.646), demonstrating robustness to the augmented transformations.  
+  - "Plastic film," though improved slightly, remains the weakest class, with the lowest mAP@50 (0.398) and mAP@50-95 (0.292).  
+  - "Drink can" saw improvements in recall (0.649) and mAP@50-95 (0.569), benefiting from enhanced augmentation.  
+- **Efficiency**:  
+  - The inference time (9.1 ms per image) is notably faster compared to earlier trials, suggesting optimized processing, despite increased augmentation complexity.  
+
+---
+
+**Next Steps**:  
+- **Augmentation Refinement**: Test intermediate values for **scale** and **rotation** (e.g., scale = 0.8, rotation = 20 degrees) to balance diversity and performance.  
+- **Class-Specific Augmentations**: Introduce tailored augmentations for "Plastic film" to address its persistent challenges.  
+- **Speed Validation**: Analyze the factors behind the significant improvement in inference speed to ensure reliability and consistency.  
+- **Model Regularization**: Experiment with additional regularization strategies, such as stochastic weight averaging or targeted dropout layers, to enhance generalization further.  
+
+This trial reinforces the importance of augmentation in improving model robustness, particularly for generalizing across varied object characteristics. Future efforts will focus on fine-tuning augmentation and addressing class-specific weaknesses for more balanced performance.  
