@@ -1,0 +1,94 @@
+## Trial #10 details.txt  
+- **Trial Number**: Trial 10  
+- **Date**: 2024-11-17  
+- **Objective**: Evaluate the impact of switching to YOLO11 large model (`yolo11l.pt`) combined with advanced augmentation, dropout regularization, and fine-tuned hyperparameters to improve overall performance and address persistent challenges in weaker classes like "Plastic film."
+
+---
+
+**Adjustments**:  
+- **Model Transition**:  
+  - Upgraded to YOLO11 large model (`yolo11l.pt`) to leverage its increased capacity and potential for better detection performance compared to the medium-sized YOLO11m model used in Trial 9.  
+
+- **Training Hyperparameters**:  
+  - **Learning Rate**: Retained a reduced learning rate of `1e-5` for smoother convergence and stability.  
+  - **Freeze Layers**: Reduced the number of frozen layers from 10 to 5, allowing the model to fine-tune a larger portion of the network.  
+  - **Dropout**: Introduced dropout (`dropout=0.1`) to reduce overfitting and improve generalization.  
+  - **Augmentation Enhancements**:  
+    - Retained MixUp augmentation (`mixup=0.2`) and shear augmentation (`shear=2.0`).  
+    - Scale (`scale=1`) and rotation (`degrees=30.0`) remained the same as in Trial 9.  
+    - Enabled `augment=True` for both inference and validation sets to assess the model’s robustness.  
+  - **Cosine Learning Rate Scheduler**: Retained to dynamically adjust the learning rate during training.  
+  - **Additional Settings**:  
+    - Epochs: 200  
+    - Patience: 30  
+    - Image size: 1536  
+    - Batch size: 16  
+
+---
+
+**Results**:  
+
+Model Summary (fused):  
+- **Layers**: 464  
+- **Parameters**: 25,283,167  
+- **Gradients**: 0  
+- **GFLOPs**: 86.6  
+
+Performance Metrics (Overall):  
+- **Precision**: 0.677  
+- **Recall**: 0.529  
+- **mAP@50**: 0.633  
+- **mAP@50-95**: 0.488  
+
+Class-wise Metrics:  
+
+```
+Class                   | Instances | Precision | Recall | mAP@50 | mAP@50-95
+------------------------|-----------|-----------|--------|--------|-----------
+Plastic film            | 93        | 0.490     | 0.441  | 0.451  | 0.331
+Cigarette               | 139       | 0.819     | 0.338  | 0.548  | 0.308
+Clear plastic bottle    | 56        | 0.736     | 0.768  | 0.843  | 0.701
+Plastic bottle cap      | 38        | 0.607     | 0.447  | 0.568  | 0.431
+Drink can               | 37        | 0.731     | 0.649  | 0.753  | 0.671
+```
+
+Speed:  
+- **Preprocessing**: 0.6 ms per image  
+- **Inference**: 29.3 ms per image  
+- **Postprocessing**: 1.0 ms per image  
+
+Results saved to `runs/detect/train`.
+
+---
+
+**Observations**:  
+- **Model Transition Impact**:  
+  - The switch to YOLO11l resulted in significant improvements across most performance metrics compared to Trial 9, particularly in mAP@50 (0.633 vs. 0.589) and mAP@50-95 (0.488 vs. 0.436).  
+  - The larger model capacity allowed better detection of complex objects, though slightly increased inference time (29.3 ms per image compared to 9.1 ms in Trial 9).  
+
+- **Class-Specific Performance**:  
+  - "Clear plastic bottle" achieved the highest mAP@50 (0.843) and mAP@50-95 (0.701), continuing its trend as the most robustly detected class.  
+  - "Plastic film," while showing modest improvements in mAP@50 (0.451), still lags behind other classes and remains a key area for improvement.  
+  - "Cigarette" exhibited high precision (0.819) but poor recall (0.338), indicating that the model struggles with consistent detection for this class.  
+
+- **Regularization and Augmentation Impact**:  
+  - The addition of dropout improved generalization, as evidenced by increased overall precision and mAP@50-95.  
+  - The augmented inference and validation sets helped the model handle varied object scales and orientations better, but further refinement is needed for weaker classes.  
+
+---
+
+**Next Steps**:  
+1. **Focused Class Improvement**:  
+   - Implement targeted augmentations (e.g., synthetic data generation, CutMix) specifically for "Plastic film" to address its persistent challenges.  
+
+2. **Hyperparameter Exploration**:  
+   - Experiment with increased dropout values (e.g., `0.2`) to test its effect on overfitting.  
+   - Test alternative optimizers like `AdamW` or `RMSprop` to evaluate their impact on training stability and convergence.  
+
+3. **Model Comparison**:  
+   - Conduct side-by-side evaluations of YOLO11m and YOLO11l on specific classes to identify where the larger model’s capacity is most beneficial.  
+
+4. **Inference Optimization**:  
+   - Investigate ways to reduce inference time without compromising detection performance, such as pruning or quantization techniques.  
+
+This trial highlights the benefits of YOLO11l's increased capacity and the role of advanced augmentation and dropout regularization in improving detection robustness. Future trials will focus on fine-tuning weak classes and optimizing for efficiency.  
