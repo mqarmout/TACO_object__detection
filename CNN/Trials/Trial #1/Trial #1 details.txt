@@ -1,0 +1,112 @@
+### **TACO Dataset Processing**
+
+#### **Dataset Preprocessing**
+1. **Data Source**:
+   - **Annotation File**: Used to load the annotations for the dataset.
+   - **Data Directory**: Directory containing image data files.
+2. **Desired Categories**:
+   - Category IDs are remapped:
+     - 36 ("Plastic film") → 0
+     - 5 ("Clear plastic bottle") → 1
+     - 12 ("Drink can") → 2
+3. **Bounding Box Scaling**:
+   - Images are resized to \(224 \times 224\).
+   - Bounding boxes are adjusted proportionally to match the new dimensions.
+
+#### **Visualization**
+- First 5 images are displayed with bounding boxes and category labels.
+- Images are loaded and processed using OpenCV and visualized using Matplotlib.
+
+---
+
+### **Object Detection Model**
+
+#### **Model Architecture**
+1. **Input**:
+   - Shape: \((224, 224, 3)\).
+2. **Feature Extraction Layers**:
+   - **Conv2D and MaxPooling**:
+     - 64 filters → \(3 \times 3\) kernel.
+     - 128 filters → \(3 \times 3\) kernel.
+     - 256 filters → \(3 \times 3\) kernel.
+     - 512 filters → \(3 \times 3\) kernel.
+   - All layers use ReLU activation.
+3. **Flatten and Fully Connected Layers**:
+   - Dense layer with 512 units (ReLU activation).
+   - Dropout: 50%.
+4. **Outputs**:
+   - **Bounding Box**: 4 linear values for \([x_{\text{min}}, y_{\text{min}}, x_{\text{max}}, y_{\text{max}}]\).
+   - **Class Prediction**: \( \text{num\_classes}=3 \) with softmax activation.
+5. **Final Output**:
+   - Concatenates bounding box and class predictions.
+
+#### **Model Configuration**
+- **Optimizer**: Adam with a learning rate of \(1 \times 10^{-3}\).
+- **Loss Function**: Custom loss combining bounding box regression and classification loss.
+
+---
+
+### **Training Setup**
+1. **Hyperparameters**:
+   - **Epochs**: 50.
+   - **Batch Size**: 32.
+2. **Callbacks**:
+   - **Evaluation Callback**:
+     - Calculates Intersection over Union (IoU) and metrics like AP, Precision, and Recall.
+   - **Loss Tracking Callback**: Monitors loss during training.
+
+---
+
+### **Performance Metrics**
+
+#### **Before Data Augmentation**
+1. **Validation and Test Loss**:
+   - Validation Loss: 1.759
+   - Test Loss: 1.676
+2. **Mean IoU**: \(0.0398\).
+3. **mAP (Mean Average Precision)**:
+   - \( \text{mAP@50-95} = 0.0026 \).
+4. **Confusion Matrix Results**:
+   - **Class 0**:
+     - Accuracy: \(54.64\%\).
+     - Precision: \(56.88\%\).
+     - Recall: \(73.81\%\).
+   - **Class 1**:
+     - Accuracy: \(54.64\%\).
+     - Precision: \(47.37\%\).
+     - Recall: \(45.76\%\).
+   - **Class 2**:
+     - Accuracy: \(54.64\%\).
+     - Precision: \(60.71\%\).
+     - Recall: \(33.33\%\).
+
+#### **After Data Augmentation**
+1. **Validation and Test Loss**:
+   - Validation Loss: 2.018
+   - Test Loss: 1.632
+2. **Mean IoU**: \(0.0304\).
+3. **mAP (Mean Average Precision)**:
+   - \( \text{mAP@50-95} = 0.1162 \).
+4. **Confusion Matrix Results**:
+   - **Class 0**:
+     - Accuracy: \(56.19\%\).
+     - Precision: \(57.80\%\).
+     - Recall: \(75.00\%\).
+   - **Class 1**:
+     - Accuracy: \(56.19\%\).
+     - Precision: \(48.08\%\).
+     - Recall: \(42.37\%\).
+   - **Class 2**:
+     - Accuracy: \(56.19\%\).
+     - Precision: \(63.64\%\).
+     - Recall: \(41.18\%\).
+
+---
+
+### **Key Observations**
+1. **Model Improvements Post-Augmentation**:
+   - Slight improvement in accuracy, precision, and recall metrics for Class 0 and Class 2.
+   - mAP@50-95 significantly increased from \(0.0026\) to \(0.1162\).
+2. **Challenges**:
+   - Overall low performance at higher IoU thresholds (\(0.75\) and \(0.90\)).
+   - Recall remains suboptimal for Classes 1 and 2, even after augmentation.
